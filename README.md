@@ -9,7 +9,7 @@
 
 ## How To Use (Command Line)
 
-``<input dir> <output dir> [<leftover dir>]`` (``leftover dir`` is optional location that will be filled with copies of source images with added hightlights for no longer needed areas).
+``cargo run --release -- <input dir> <output dir> [<leftover dir>]`` (``leftover dir`` is optional location that will be filled with copies of source images with added hightlights for no longer needed areas).
 
 ## Minimum Rust Version
 
