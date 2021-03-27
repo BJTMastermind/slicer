@@ -1,11 +1,10 @@
-use image::{RgbaImage, GenericImage};
-use std::fs;
 use crate::util::hightlight_image;
+use image::{GenericImage, RgbaImage};
+use std::fs;
 
-pub fn slice_paintings(from_path: &String, to_path: &String, leftover_path: &String) {
+pub fn slice_paintings(from_path: &str, to_path: &str, leftover_path: Option<&str>) {
     let textures = vec![
         ("back", 240, 0, 16, 16),
-        
         ("kebab", 0, 0, 16, 16),
         ("aztec", 16, 0, 16, 16),
         ("alban", 32, 0, 16, 16),
@@ -31,24 +30,77 @@ pub fn slice_paintings(from_path: &String, to_path: &String, leftover_path: &Str
         ("pigscene", 64, 192, 64, 64),
         ("burning_skull", 128, 192, 64, 64),
         ("skeleton", 192, 64, 64, 48),
-        ("donkey_kong", 192, 112, 64, 48)];
-    if leftover_path != &"".to_string() {
-        let used_path = format!("{}{}", leftover_path, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png");
-        fs::copy(format!("{}{}", from_path, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"), used_path).unwrap();
+        ("donkey_kong", 192, 112, 64, 48),
+    ];
+    if let Some(lp) = leftover_path {
+        let used_path = format!(
+            "{}{}",
+            lp, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"
+        );
+        fs::copy(
+            format!(
+                "{}{}",
+                from_path,
+                "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"
+            ),
+            used_path,
+        )
+        .unwrap();
     }
     for i in 0..textures.len() {
-        get_image(&from_path, &to_path, &leftover_path, textures[i].0, textures[i].1, textures[i].2, textures[i].3, textures[i].4);
+        get_image(
+            from_path,
+            to_path,
+            leftover_path,
+            textures[i].0,
+            textures[i].1,
+            textures[i].2,
+            textures[i].3,
+            textures[i].4,
+        );
     }
 }
 
-fn get_image(from_path: &String, to_path: &String, leftover_path: &String, name: &str, x: u32, y: u32, w: u32, h: u32) {
-    let mut base: RgbaImage = image::open(format!("{}{}", from_path, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png")).unwrap().to_rgba8();
+fn get_image(
+    from_path: &str,
+    to_path: &str,
+    leftover_path: Option<&str>,
+    name: &str,
+    x: u32,
+    y: u32,
+    w: u32,
+    h: u32,
+) {
+    let mut base: RgbaImage = image::open(format!(
+        "{}{}",
+        from_path, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"
+    ))
+    .unwrap()
+    .to_rgba8();
     let mut mark: RgbaImage;
-    let out_path = format!("{}{}{}{}", to_path, "assets/minecraft/textures/painting/", &name, ".png");
+    let out_path = format!(
+        "{}{}{}{}",
+        to_path, "assets/minecraft/textures/painting/", &name, ".png"
+    );
     let texture: RgbaImage = base.sub_image(x, y, w, h).to_image();
-    if leftover_path != &"".to_string() {
-        mark = image::open(format!("{}{}", leftover_path, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png")).unwrap().to_rgba8();
-        hightlight_image(&mut mark, format!("{}{}", leftover_path, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"), x, y, w, h);
+    if let Some(lp) = leftover_path {
+        mark = image::open(format!(
+            "{}{}",
+            lp, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"
+        ))
+        .unwrap()
+        .to_rgba8();
+        hightlight_image(
+            &mut mark,
+            format!(
+                "{}{}",
+                lp, "assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand.png"
+            ),
+            x,
+            y,
+            w,
+            h,
+        );
     }
     texture.save(&out_path).unwrap();
     println!("{}", out_path);
