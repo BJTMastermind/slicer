@@ -1,8 +1,8 @@
-use image::{RgbaImage, GenericImage};
-use std::fs;
 use crate::util::hightlight_image;
+use image::{GenericImage, RgbaImage};
+use std::fs;
 
-pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &String) {
+pub fn slice_particles(from_path: &str, to_path: &str, leftover_path: Option<&str>) {
     let textures = vec![
         ("generic_0", 0, 0, 8, 8),
         ("generic_1", 8, 0, 8, 8),
@@ -12,12 +12,10 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("generic_5", 40, 0, 8, 8),
         ("generic_6", 48, 0, 8, 8),
         ("generic_7", 56, 0, 8, 8),
-        
         ("splash_0", 24, 8, 8, 8),
         ("splash_1", 32, 8, 8, 8),
         ("splash_2", 40, 8, 8, 8),
         ("splash_3", 48, 8, 8, 8),
-        
         ("sga_a", 8, 112, 8, 8),
         ("sga_b", 16, 112, 8, 8),
         ("sga_c", 24, 112, 8, 8),
@@ -44,7 +42,6 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("sga_x", 64, 120, 8, 8),
         ("sga_y", 72, 120, 8, 8),
         ("sga_z", 80, 120, 8, 8),
-        
         ("effect_0", 0, 64, 8, 8),
         ("effect_1", 8, 64, 8, 8),
         ("effect_2", 16, 64, 8, 8),
@@ -53,7 +50,6 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("effect_5", 40, 64, 8, 8),
         ("effect_6", 48, 64, 8, 8),
         ("effect_7", 56, 64, 8, 8),
-        
         ("glitter_0", 0, 88, 8, 8),
         ("glitter_1", 8, 88, 8, 8),
         ("glitter_2", 16, 88, 8, 8),
@@ -62,7 +58,6 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("glitter_5", 40, 88, 8, 8),
         ("glitter_6", 48, 88, 8, 8),
         ("glitter_7", 56, 88, 8, 8),
-        
         ("spark_0", 0, 80, 8, 8),
         ("spark_1", 8, 80, 8, 8),
         ("spark_2", 16, 80, 8, 8),
@@ -71,7 +66,6 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("spark_5", 40, 80, 8, 8),
         ("spark_6", 48, 80, 8, 8),
         ("spark_7", 56, 80, 8, 8),
-        
         ("spell_0", 0, 72, 8, 8),
         ("spell_1", 8, 72, 8, 8),
         ("spell_2", 16, 72, 8, 8),
@@ -80,13 +74,11 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("spell_5", 40, 72, 8, 8),
         ("spell_6", 48, 72, 8, 8),
         ("spell_7", 56, 72, 8, 8),
-        
         ("bubble_pop_0", 0, 131, 16, 16),
         ("bubble_pop_1", 16, 131, 16, 16),
         ("bubble_pop_2", 32, 131, 16, 16),
         ("bubble_pop_3", 48, 131, 16, 16),
         ("bubble_pop_4", 64, 131, 16, 16),
-        
         ("flash", 32, 16, 32, 32),
         ("nautilus", 0, 104, 8, 8),
         ("note", 0, 32, 8, 8),
@@ -102,30 +94,85 @@ pub fn slice_particles(from_path: &String, to_path: &String, leftover_path: &Str
         ("drip_hang", 0, 56, 8, 8),
         ("drip_fall", 8, 56, 8, 8),
         ("drip_land", 16, 56, 8, 8),
-        ("fishing_hook", 8, 16, 8, 8)];
-    if leftover_path != &"".to_string() {
-        let used_path = format!("{}{}", leftover_path, "assets/minecraft/textures/particle/particles.png");
-        fs::copy(format!("{}{}", from_path, "assets/minecraft/textures/particle/particles.png"), used_path).unwrap();
+        ("fishing_hook", 8, 16, 8, 8),
+    ];
+    if let Some(lp) = leftover_path {
+        let used_path = format!(
+            "{}{}",
+            lp, "assets/minecraft/textures/particle/particles.png"
+        );
+        fs::copy(
+            format!(
+                "{}{}",
+                from_path, "assets/minecraft/textures/particle/particles.png"
+            ),
+            used_path,
+        )
+        .unwrap();
     }
     for i in 0..textures.len() {
-        get_image(&from_path, &to_path, &leftover_path, textures[i].0, textures[i].1, textures[i].2, textures[i].3, textures[i].4)
+        get_image(
+            from_path,
+            to_path,
+            leftover_path,
+            textures[i].0,
+            textures[i].1,
+            textures[i].2,
+            textures[i].3,
+            textures[i].4,
+        )
     }
 }
 
-fn get_image(from_path: &String, to_path: &String, leftover_path: &String, name: &str, x: u32, y: u32, w: u32, h: u32) {
-    let mut base: RgbaImage = image::open(format!("{}{}", from_path, "assets/minecraft/textures/particle/particles.png")).unwrap().to_rgba8();
+fn get_image(
+    from_path: &str,
+    to_path: &str,
+    leftover_path: Option<&str>,
+    name: &str,
+    x: u32,
+    y: u32,
+    w: u32,
+    h: u32,
+) {
+    let mut base: RgbaImage = image::open(format!(
+        "{}{}",
+        from_path, "assets/minecraft/textures/particle/particles.png"
+    ))
+    .unwrap()
+    .to_rgba8();
     let mut mark: RgbaImage;
     let out_path: String;
     if &name == &"fishing_hook" {
-        out_path = format!("{}{}{}{}", to_path, "assets/minecraft/textures/entity/", &name, ".png");
+        out_path = format!(
+            "{}{}{}{}",
+            to_path, "assets/minecraft/textures/entity/", &name, ".png"
+        );
     } else {
-        out_path = format!("{}{}{}{}", to_path, "assets/minecraft/textures/particle/", &name, ".png");
+        out_path = format!(
+            "{}{}{}{}",
+            to_path, "assets/minecraft/textures/particle/", &name, ".png"
+        );
     }
     let texture: RgbaImage = base.sub_image(x, y, w, h).to_image();
     texture.save(&out_path).unwrap();
-    if leftover_path != &"".to_string() {
-        mark = image::open(format!("{}{}", leftover_path, "assets/minecraft/textures/particle/particles.png")).unwrap().to_rgba8();
-        hightlight_image(&mut mark, format!("{}{}", leftover_path, "assets/minecraft/textures/particle/particles.png"), x, y, w, h);
+    if let Some(lp) = leftover_path {
+        mark = image::open(format!(
+            "{}{}",
+            lp, "assets/minecraft/textures/particle/particles.png"
+        ))
+        .unwrap()
+        .to_rgba8();
+        hightlight_image(
+            &mut mark,
+            format!(
+                "{}{}",
+                lp, "assets/minecraft/textures/particle/particles.png"
+            ),
+            x,
+            y,
+            w,
+            h,
+        );
     }
     println!("{}", out_path);
 }
