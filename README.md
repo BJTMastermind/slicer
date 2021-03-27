@@ -4,6 +4,7 @@
 
 ## Plan To Add / To Do
 
+- [x] Slicing Support
 - [ ] Merging support
 - [ ] Zip file support
 
