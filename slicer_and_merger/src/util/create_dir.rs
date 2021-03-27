@@ -1,23 +1,46 @@
 use std::{fs, path::Path};
 
-pub fn create_dirs(out_dir: &String, make_gui: bool) {
-    let paths = format!("{}{}", out_dir, "assets/minecraft/textures/");
+pub enum PackDirType {
+    GUI,
+    NONE,
+}
+
+pub fn create_texture_pack_dir(out_dir: &str, pack_dir_type: &PackDirType) {
+    use PackDirType::*;
+    let paths = &format!("{}{}", out_dir, "assets/minecraft/textures/");
     if !Path::new(&paths).exists() {
         fs::create_dir_all(&paths).expect("Could not create directory!");
     }
-    
-    let texture_folders: Vec<String>;
-    if make_gui {
-        texture_folders = vec![format!("{}{}", paths, "painting/"), format!("{}{}", paths, "particle/"),
-        format!("{}{}", paths, "entity/"), format!("{}{}", paths, "gui/"), format!("{}{}", paths, "gui/container/")];
-    } else {
-        texture_folders = vec![format!("{}{}", paths, "painting/"), format!("{}{}", paths, "mob_effect/"),
-        format!("{}{}", paths, "particle/"), format!("{}{}", paths, "entity/")];
-    }
+    let texture_folders = match pack_dir_type {
+        GUI => create_texture_pack_path_gui(paths),
+        NONE => create_texture_pack_path(paths),
+    };
+    create_dirs(&texture_folders);
+}
 
-    for i in 0..texture_folders.len() {
-        if !Path::new(&texture_folders[i]).exists() {
-            fs::create_dir(&texture_folders[i]).expect("Could not create directory!");
+fn create_texture_pack_path_gui(paths: &str) -> Vec<String> {
+    vec![
+        format!("{}{}", paths, "painting/"),
+        format!("{}{}", paths, "particle/"),
+        format!("{}{}", paths, "entity/"),
+        format!("{}{}", paths, "gui/"),
+        format!("{}{}", paths, "gui/container/"),
+    ]
+}
+
+fn create_texture_pack_path(paths: &str) -> Vec<String> {
+    vec![
+        format!("{}{}", paths, "painting/"),
+        format!("{}{}", paths, "mob_effect/"),
+        format!("{}{}", paths, "particle/"),
+        format!("{}{}", paths, "entity/"),
+    ]
+}
+
+fn create_dirs(folders: &[String]) {
+    for i in 0..folders.len() {
+        if !Path::new(&folders[i]).exists() {
+            fs::create_dir(&folders[i]).expect("Could not create directory!");
         }
     }
 }
