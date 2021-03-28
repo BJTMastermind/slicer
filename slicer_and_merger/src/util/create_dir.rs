@@ -38,9 +38,9 @@ fn create_texture_pack_path(paths: &str) -> Vec<String> {
 }
 
 fn create_dirs(folders: &[String]) {
-    for i in 0..folders.len() {
-        if !Path::new(&folders[i]).exists() {
-            fs::create_dir(&folders[i]).expect("Could not create directory!");
+    for folder in folders.iter() {
+        if !Path::new(&folder).exists() {
+            fs::create_dir(&folder).expect("Could not create directory!");
         }
     }
 }
