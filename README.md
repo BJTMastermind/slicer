@@ -1,6 +1,14 @@
 <h1 align="center">Slicer and Merger</h1>
 
-  This is a Rust fork of Mojang's [slicer](https://github.com/Mojang/slicer) program that is written in Java and extended to add support to reverse the process.                                                                        
+<p align="center">
+  <a><img alt="lastupdated" src="https://img.shields.io/github/last-commit/cowboy8625/slicer_and_merger"></a>
+  <a><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/cowboy8625/slicer_and_merger"></a>
+  <a><img alt="issuse" src="https://img.shields.io/github/issues/cowboy8625/slicer_and_merger"></a>
+  <a><img alt="Lines of Code" src="https://img.shields.io/tokei/lines/github/cowboy8625/slicer_and_merger"></a>
+  <a><img alt="License" src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+</p>
+
+  This is a Rust fork of Mojang's [slicer](https://github.com/Mojang/slicer) program that is written in Java and extended to add support to reverse the process.
 
 ## Plan To Add / To Do
 
