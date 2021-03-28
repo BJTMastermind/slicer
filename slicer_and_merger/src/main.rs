@@ -1,7 +1,7 @@
-mod slicer_types;
+// mod slicer_types;
 mod util;
 
-use slicer_types::*;
+// use slicer_types::*;
 use util::*;
 
 fn main() {
@@ -16,15 +16,16 @@ fn main() {
     }
 
     // formating folder paths
-    if !args[0].ends_with("/") {
-        args[0] = format!("{}{}", args[0], "/")
-    }
-    if !args[1].ends_with("/") {
-        args[1] = format!("{}{}", args[1], "/")
-    }
-    if args.len() == 3 {
-        if !args[2].ends_with("/") {
-            args[2] = format!("{}{}", args[2], "/")
+    for i in 0..3 {
+        if let Some(arg) = args.get_mut(i) {
+            #[cfg(unix)]
+            if arg.ends_with('/') {
+                *arg = format!("{}{}", arg, "/")
+            }
+            #[cfg(windows)]
+            if arg.ends_with('\\') {
+                *arg = format!("{}{}", arg, "/")
+            }
         }
     }
 
@@ -42,9 +43,10 @@ fn main() {
 
     create_texture_pack_dir(&out_path, &PackDirType::NONE);
 
-    slice_paintings(&in_path, &out_path, leftover);
-    slice_effects(&in_path, &out_path, leftover);
-    slice_particles(&in_path, &out_path, leftover);
-    slice_explosion(&in_path, &out_path, leftover);
-    slice_sweep(&in_path, &out_path, leftover);
+    ImageData::default().slice_all(&in_path, &out_path, leftover);
+    // slice_paintings(&in_path, &out_path, leftover);
+    // slice_effects(&in_path, &out_path, leftover);
+    // slice_particles(&in_path, &out_path, leftover);
+    // slice_explosion(&in_path, &out_path, leftover);
+    // slice_sweep(&in_path, &out_path, leftover);
 }
