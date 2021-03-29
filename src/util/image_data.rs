@@ -1,5 +1,6 @@
 use crate::util::hightlight_image;
 use image::{GenericImage, RgbaImage};
+use PackImagePaths::*;
 use std::fs;
 
 pub trait Slicer {
@@ -12,7 +13,7 @@ pub trait Slicer {
     );
     fn slice_all(&self, from_path: &str, to_path: &str, leftover_path: Option<&str>) {
         use PackImagePaths::*;
-        for pip in vec![Effects, Explosion, Paintings, Particles, Sweep] {
+        for pip in vec![Paintings, Effects, Particles, Explosion, Sweep] {
             self.slice(from_path, to_path, leftover_path, &pip);
         }
     }
@@ -24,10 +25,10 @@ pub trait Merger {
 }
 
 pub enum PackImagePaths {
-    Effects,
-    Explosion,
     Paintings,
+    Effects,
     Particles,
+    Explosion,
     Sweep,
 }
 
@@ -58,15 +59,45 @@ impl PackImagePaths {
 }
 
 pub struct ImageData {
-    effects: Vec<(&'static str, u8, u8, u8, u8)>,
-    explosions: Vec<(&'static str, u8, u8, u8, u8)>,
     paintings: Vec<(&'static str, u8, u8, u8, u8)>,
+    effects: Vec<(&'static str, u8, u8, u8, u8)>,
     particles: Vec<(&'static str, u8, u8, u8, u8)>,
+    explosions: Vec<(&'static str, u8, u8, u8, u8)>,
     sweep: Vec<(&'static str, u8, u8, u8, u8)>,
 }
 
 impl Default for ImageData {
-    fn default() -> Self {
+    fn default() -> Self {       
+        let paintings = vec![
+            ("back", 240, 0, 16, 16),
+
+            ("kebab", 0, 0, 16, 16),
+            ("aztec", 16, 0, 16, 16),
+            ("alban", 32, 0, 16, 16),
+            ("aztec2", 48, 0, 16, 16),
+            ("bomb", 64, 0, 16, 16),
+            ("plant", 80, 0, 16, 16),
+            ("wasteland", 96, 0, 16, 16),
+            ("pool", 0, 32, 32, 16),
+            ("courbet", 32, 32, 32, 16),
+            ("sea", 64, 32, 32, 16),
+            ("sunset", 96, 32, 32, 16),
+            ("creebet", 128, 32, 32, 16),
+            ("wanderer", 0, 64, 16, 32),
+            ("graham", 16, 64, 16, 32),
+            ("match", 0, 128, 32, 32),
+            ("bust", 32, 128, 32, 32),
+            ("stage", 64, 128, 32, 32),
+            ("void", 96, 128, 32, 32),
+            ("skull_and_roses", 128, 128, 32, 32),
+            ("wither", 160, 128, 32, 32),
+            ("fighters", 0, 96, 64, 32),
+            ("pointer", 0, 192, 64, 64),
+            ("pigscene", 64, 192, 64, 64),
+            ("burning_skull", 128, 192, 64, 64),
+            ("skeleton", 192, 64, 64, 48),
+            ("donkey_kong", 192, 112, 64, 48),
+        ];
         let effects = vec![
             ("speed", 0, 198, 18, 18),
             ("slowness", 18, 198, 18, 18),
@@ -96,53 +127,6 @@ impl Default for ImageData {
             ("conduit_power", 162, 198, 18, 18),
             ("dolphins_grace", 180, 198, 18, 18),
         ];
-        let explosions = vec![
-            ("explosion_0", 0, 0, 32, 32),
-            ("explosion_1", 32, 0, 32, 32),
-            ("explosion_2", 64, 0, 32, 32),
-            ("explosion_3", 96, 0, 32, 32),
-            ("explosion_4", 0, 32, 32, 32),
-            ("explosion_5", 32, 32, 32, 32),
-            ("explosion_6", 64, 32, 32, 32),
-            ("explosion_7", 96, 32, 32, 32),
-            ("explosion_8", 0, 64, 32, 32),
-            ("explosion_9", 32, 64, 32, 32),
-            ("explosion_10", 64, 64, 32, 32),
-            ("explosion_11", 96, 64, 32, 32),
-            ("explosion_12", 0, 96, 32, 32),
-            ("explosion_13", 32, 96, 32, 32),
-            ("explosion_14", 64, 96, 32, 32),
-            ("explosion_15", 96, 96, 32, 32),
-        ];
-        let paintings = vec![
-            ("back", 240, 0, 16, 16),
-            ("kebab", 0, 0, 16, 16),
-            ("aztec", 16, 0, 16, 16),
-            ("alban", 32, 0, 16, 16),
-            ("aztec2", 48, 0, 16, 16),
-            ("bomb", 64, 0, 16, 16),
-            ("plant", 80, 0, 16, 16),
-            ("wasteland", 96, 0, 16, 16),
-            ("pool", 0, 32, 32, 16),
-            ("courbet", 32, 32, 32, 16),
-            ("sea", 64, 32, 32, 16),
-            ("sunset", 96, 32, 32, 16),
-            ("creebet", 128, 32, 32, 16),
-            ("wanderer", 0, 64, 16, 32),
-            ("graham", 16, 64, 16, 32),
-            ("match", 0, 128, 32, 32),
-            ("bust", 32, 128, 32, 32),
-            ("stage", 64, 128, 32, 32),
-            ("void", 96, 128, 32, 32),
-            ("skull_and_roses", 128, 128, 32, 32),
-            ("wither", 160, 128, 32, 32),
-            ("fighters", 0, 96, 64, 32),
-            ("pointer", 0, 192, 64, 64),
-            ("pigscene", 64, 192, 64, 64),
-            ("burning_skull", 128, 192, 64, 64),
-            ("skeleton", 192, 64, 64, 48),
-            ("donkey_kong", 192, 112, 64, 48),
-        ];
         let particles = vec![
             ("generic_0", 0, 0, 8, 8),
             ("generic_1", 8, 0, 8, 8),
@@ -156,6 +140,7 @@ impl Default for ImageData {
             ("splash_1", 32, 8, 8, 8),
             ("splash_2", 40, 8, 8, 8),
             ("splash_3", 48, 8, 8, 8),
+
             ("sga_a", 8, 112, 8, 8),
             ("sga_b", 16, 112, 8, 8),
             ("sga_c", 24, 112, 8, 8),
@@ -182,6 +167,7 @@ impl Default for ImageData {
             ("sga_x", 64, 120, 8, 8),
             ("sga_y", 72, 120, 8, 8),
             ("sga_z", 80, 120, 8, 8),
+
             ("effect_0", 0, 64, 8, 8),
             ("effect_1", 8, 64, 8, 8),
             ("effect_2", 16, 64, 8, 8),
@@ -198,6 +184,7 @@ impl Default for ImageData {
             ("glitter_5", 40, 88, 8, 8),
             ("glitter_6", 48, 88, 8, 8),
             ("glitter_7", 56, 88, 8, 8),
+
             ("spark_0", 0, 80, 8, 8),
             ("spark_1", 8, 80, 8, 8),
             ("spark_2", 16, 80, 8, 8),
@@ -214,11 +201,13 @@ impl Default for ImageData {
             ("spell_5", 40, 72, 8, 8),
             ("spell_6", 48, 72, 8, 8),
             ("spell_7", 56, 72, 8, 8),
+
             ("bubble_pop_0", 0, 131, 16, 16),
             ("bubble_pop_1", 16, 131, 16, 16),
             ("bubble_pop_2", 32, 131, 16, 16),
             ("bubble_pop_3", 48, 131, 16, 16),
             ("bubble_pop_4", 64, 131, 16, 16),
+
             ("flash", 32, 16, 32, 32),
             ("nautilus", 0, 104, 8, 8),
             ("note", 0, 32, 8, 8),
@@ -236,6 +225,24 @@ impl Default for ImageData {
             ("drip_land", 16, 56, 8, 8),
             ("fishing_hook", 8, 16, 8, 8),
         ];
+        let explosions = vec![
+            ("explosion_0", 0, 0, 32, 32),
+            ("explosion_1", 32, 0, 32, 32),
+            ("explosion_2", 64, 0, 32, 32),
+            ("explosion_3", 96, 0, 32, 32),
+            ("explosion_4", 0, 32, 32, 32),
+            ("explosion_5", 32, 32, 32, 32),
+            ("explosion_6", 64, 32, 32, 32),
+            ("explosion_7", 96, 32, 32, 32),
+            ("explosion_8", 0, 64, 32, 32),
+            ("explosion_9", 32, 64, 32, 32),
+            ("explosion_10", 64, 64, 32, 32),
+            ("explosion_11", 96, 64, 32, 32),
+            ("explosion_12", 0, 96, 32, 32),
+            ("explosion_13", 32, 96, 32, 32),
+            ("explosion_14", 64, 96, 32, 32),
+            ("explosion_15", 96, 96, 32, 32),
+        ];
         let sweep = vec![
             ("sweep_0", 0, 0, 32, 16),
             ("sweep_1", 32, 0, 32, 16),
@@ -247,28 +254,20 @@ impl Default for ImageData {
             ("sweep_7", 96, 16, 32, 16),
         ];
         Self {
-            effects,
-            explosions,
             paintings,
+            effects,
             particles,
+            explosions,
             sweep,
         }
     }
 }
 
 impl Slicer for ImageData {
-    fn slice(
-        &self,
-        from_path: &str,
-        to_path: &str,
-        leftover_path: Option<&str>,
-        pip: &PackImagePaths,
-    ) {
-        use PackImagePaths::*;
+    fn slice(&self, from_path: &str, to_path: &str, leftover_path: Option<&str>, pip: &PackImagePaths) {
         if let Some(lp) = leftover_path {
             let used_path = format!("{}{}", lp, pip.atlas_path());
-            fs::copy(format!("{}{}", from_path, pip.atlas_path()), used_path)
-                .expect("Left Over Path Corrupted");
+            fs::copy(format!("{}{}", from_path, pip.atlas_path()), used_path).expect("Could not find copy image for leftover.");
         }
         let textures = match pip {
             Effects => &self.effects,
@@ -283,29 +282,19 @@ impl Slicer for ImageData {
     }
 }
 
-fn get_image(
-    from_path: &str,
-    to_path: &str,
-    leftover_path: Option<&str>,
-    (name, x, y, width, height): &(&str, u8, u8, u8, u8),
-    pip: &PackImagePaths,
-) {
-    let mut base: RgbaImage = image::open(format!("{}{}", from_path, pip.atlas_path(),))
-        .unwrap()
-        .to_rgba8();
+fn get_image(from_path: &str, to_path: &str, leftover_path: Option<&str>, (name, x, y, width, height): &(&str, u8, u8, u8, u8), pip: &PackImagePaths) {
+    let mut base: RgbaImage = image::open(format!("{}{}", from_path, pip.atlas_path())).unwrap().to_rgba8();
     let mut mark: RgbaImage;
-    let out_path = format!("{}{}{}{}", to_path, pip.resource_path(), &name, ".png");
-    let texture: RgbaImage = base
-        .sub_image(*x as u32, *y as u32, *width as u32, *height as u32)
-        .to_image();
+    let out_path: String;
+    if name == &"fishing_hook" {
+        out_path = format!("{}{}{}{}", to_path, "assets/minecraft/textures/entity/", &name, ".png");
+    } else {
+        out_path = format!("{}{}{}{}", to_path, pip.resource_path(), &name, ".png");
+    }
+    let texture: RgbaImage = base.sub_image(*x as u32, *y as u32, *width as u32, *height as u32).to_image();
     if let Some(lp) = leftover_path {
-        mark = image::open(format!("{}{}", lp, pip.atlas_path()))
-            .unwrap()
-            .to_rgba8();
-        hightlight_image(
-            &mut mark,
-            format!("{}{}", lp, pip.atlas_path()),
-            *x as u32,
+        mark = image::open(format!("{}{}", lp, pip.atlas_path())).unwrap().to_rgba8();
+        hightlight_image(&mut mark, format!("{}{}", lp, pip.atlas_path()), *x as u32,
             *y as u32,
             *width as u32,
             *height as u32,
@@ -313,7 +302,7 @@ fn get_image(
     }
     match texture.save(&out_path) {
         Ok(_) => {}
-        Err(error) => eprintln!("Could not save texture: {}", error),
+        Err(error) => println!("Could not save texture: {}", error),
     }
     println!("{}", out_path);
 }

@@ -1,7 +1,5 @@
-// mod slicer_types;
 mod util;
 
-// use slicer_types::*;
 use util::*;
 
 fn main() {
@@ -19,12 +17,12 @@ fn main() {
     for i in 0..3 {
         if let Some(arg) = args.get_mut(i) {
             #[cfg(unix)]
-            if arg.ends_with('/') {
+            if !arg.ends_with("/") {
                 *arg = format!("{}{}", arg, "/")
             }
             #[cfg(windows)]
-            if arg.ends_with('\\') {
-                *arg = format!("{}{}", arg, "/")
+            if !arg.ends_with("\\") {
+                *arg = format!("{}{}", arg, "\\")
             }
         }
     }
@@ -44,9 +42,4 @@ fn main() {
     create_texture_pack_dir(&out_path, &PackDirType::NONE);
 
     ImageData::default().slice_all(&in_path, &out_path, leftover);
-    // slice_paintings(&in_path, &out_path, leftover);
-    // slice_effects(&in_path, &out_path, leftover);
-    // slice_particles(&in_path, &out_path, leftover);
-    // slice_explosion(&in_path, &out_path, leftover);
-    // slice_sweep(&in_path, &out_path, leftover);
 }
