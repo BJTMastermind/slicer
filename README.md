@@ -13,8 +13,8 @@
 ## Plan To Add / To Do
 
 - [x] Slicing Support
+- [ ] Zip file support
 - [ ] <strike>Merging support</strike>
-- [ ] <strike>Zip file support</strike>
 
 ## How To Use (Command Line)
 
