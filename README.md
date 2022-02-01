@@ -16,7 +16,8 @@ This is a Rust port of Mojang's [slicer](https://github.com/Mojang/slicer) progr
 If using compiled executeable file, cd to the directory with the slicer executeable<br>
 and replace all `cargo run --release --` with `./slicer` when running the commands<br>
 
-If any of the folder/file paths containes spaces make sure to put the paths in double qoutes `"./path/to my/cool pack"`
+If any of the folder/file paths containes spaces make sure to put the paths in double qoutes<br>
+like this `"./path/to my/cool pack"`
 
 ``cargo run --release -- <input dir or zip> <output dir> [<leftover dir>]`` (``leftover dir`` is optional location that will be filled with copies of source images with added hightlights for no longer needed areas).
 
