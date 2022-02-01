@@ -9,7 +9,7 @@ fn main() {
 
     // Checking for correct amount of Args
     if !(2..=3).contains(&args.len()) {
-        println!("Usage: <input dir> <output dir> [<leftover dir>]");
+        println!("Usage: <input dir or zip> <output dir> [<leftover dir>]");
         std::process::exit(0);
     }
 
@@ -17,11 +17,11 @@ fn main() {
     for i in 0..3 {
         if let Some(arg) = args.get_mut(i) {
             #[cfg(unix)]
-            if !arg.ends_with("/") {
+            if !arg.ends_with(".zip") && !arg.ends_with("/") {
                 *arg = format!("{}{}", arg, "/")
             }
             #[cfg(windows)]
-            if !arg.ends_with("\\") {
+            if !arg.ends_with(".zip") && !arg.ends_with("\\") {
                 *arg = format!("{}{}", arg, "\\")
             }
         }
@@ -41,5 +41,9 @@ fn main() {
 
     create_texture_pack_dir(&out_path, &PackDirType::NONE);
 
-    ImageData::default().slice_all(&in_path, &out_path, leftover);
+    if in_path.ends_with(".zip") {
+        read_from_zip(&in_path, &out_path.as_str(), leftover);       
+    } else {
+        ImageData::default().slice_all(&in_path, &out_path, leftover);
+    }    
 }

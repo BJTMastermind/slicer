@@ -6,19 +6,9 @@ pub fn hightlight_image(image: &mut RgbaImage, name: String, x: u32, y: u32, w: 
             let pixel = image.get_pixel(img_x, img_y);
             let color: Rgba<u8>;
             if pixel[1] == 255 || pixel[2] == 255 {
-                color = Rgba([
-                    pixel[0].saturating_add(128),
-                    128,
-                    128,
-                    pixel[3].saturating_add(128),
-                ]);
+                color = Rgba([pixel[0].saturating_add(128), 128, 128, pixel[3].saturating_add(128)]);
             } else {
-                color = Rgba([
-                    pixel[0].saturating_add(128),
-                    pixel[1],
-                    pixel[2],
-                    pixel[3].saturating_add(128),
-                ]);
+                color = Rgba([pixel[0].saturating_add(128), pixel[1], pixel[2], pixel[3].saturating_add(128)]);
             }
             image.put_pixel(img_x, img_y, color);
         }

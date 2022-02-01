@@ -4,24 +4,15 @@ use PackImagePaths::*;
 use std::fs;
 
 pub trait Slicer {
-    fn slice(
-        &self,
-        from_path: &str,
-        to_path: &str,
-        leftover_path: Option<&str>,
-        pip: &PackImagePaths,
-    );
+    fn slice(&self, from_path: &str, to_path: &str, leftover_path: Option<&str>, pip: &PackImagePaths);
+    
     fn slice_all(&self, from_path: &str, to_path: &str, leftover_path: Option<&str>) {
-        use PackImagePaths::*;
         for pip in vec![Paintings, Effects, Particles, Explosion, Sweep] {
             self.slice(from_path, to_path, leftover_path, &pip);
         }
     }
-}
 
-pub trait Merger {
-    fn merge(&self);
-    fn merge_all(&self) {}
+    fn slice_image(&self, image: &RgbaImage, filepath: &str, to_path: &str, leftover_path: Option<&str>, pip: &PackImagePaths);
 }
 
 pub enum PackImagePaths {
@@ -136,6 +127,7 @@ impl Default for ImageData {
             ("generic_5", 40, 0, 8, 8),
             ("generic_6", 48, 0, 8, 8),
             ("generic_7", 56, 0, 8, 8),
+
             ("splash_0", 24, 8, 8, 8),
             ("splash_1", 32, 8, 8, 8),
             ("splash_2", 40, 8, 8, 8),
@@ -176,6 +168,7 @@ impl Default for ImageData {
             ("effect_5", 40, 64, 8, 8),
             ("effect_6", 48, 64, 8, 8),
             ("effect_7", 56, 64, 8, 8),
+
             ("glitter_0", 0, 88, 8, 8),
             ("glitter_1", 8, 88, 8, 8),
             ("glitter_2", 16, 88, 8, 8),
@@ -193,6 +186,7 @@ impl Default for ImageData {
             ("spark_5", 40, 80, 8, 8),
             ("spark_6", 48, 80, 8, 8),
             ("spark_7", 56, 80, 8, 8),
+
             ("spell_0", 0, 72, 8, 8),
             ("spell_1", 8, 72, 8, 8),
             ("spell_2", 16, 72, 8, 8),
@@ -277,32 +271,54 @@ impl Slicer for ImageData {
             Sweep => &self.sweep,
         };
         for name_dim in textures.iter() {
-            get_image(from_path, to_path, leftover_path, name_dim, pip);
+            get_image(None, from_path, to_path, leftover_path, name_dim, pip);
         }
     }
+
+    fn slice_image(&self, image: &RgbaImage, filepath: &str, to_path: &str, leftover_path: Option<&str>, pip: &PackImagePaths) {
+        if let Some(lp) = leftover_path {
+            let used_path = format!("{}{}", lp, pip.atlas_path());
+            image.save(used_path).expect("Could not find copy image for leftover.");
+        }
+        let textures = match pip {
+            Effects => &self.effects,
+            Explosion => &self.explosions,
+            Paintings => &self.paintings,
+            Particles => &self.particles,
+            Sweep => &self.sweep,
+        };
+        for name_dim in textures.iter() {
+            get_image(Some(image), filepath, to_path, leftover_path, name_dim, pip);
+        }
+    }    
 }
 
-fn get_image(from_path: &str, to_path: &str, leftover_path: Option<&str>, (name, x, y, width, height): &(&str, u8, u8, u8, u8), pip: &PackImagePaths) {
-    let mut base: RgbaImage = image::open(format!("{}{}", from_path, pip.atlas_path())).unwrap().to_rgba8();
-    let mut mark: RgbaImage;
+fn get_image(image: Option<&RgbaImage>, from_path: &str, to_path: &str, leftover_path: Option<&str>, (name, x, y, width, height): &(&str, u8, u8, u8, u8), pip: &PackImagePaths) {
+    let mut base: RgbaImage;
+    if let Some(img) = image {
+        base = img.clone();
+    } else {
+        base = image::open(format!("{}{}", from_path, pip.atlas_path())).unwrap().to_rgba8();
+    }
+
     let out_path: String;
     if name == &"fishing_hook" {
         out_path = format!("{}{}{}{}", to_path, "assets/minecraft/textures/entity/", &name, ".png");
     } else {
         out_path = format!("{}{}{}{}", to_path, pip.resource_path(), &name, ".png");
     }
-    let texture: RgbaImage = base.sub_image(*x as u32, *y as u32, *width as u32, *height as u32).to_image();
+    
+    let mut mark: RgbaImage;
     if let Some(lp) = leftover_path {
         mark = image::open(format!("{}{}", lp, pip.atlas_path())).unwrap().to_rgba8();
-        hightlight_image(&mut mark, format!("{}{}", lp, pip.atlas_path()), *x as u32,
-            *y as u32,
-            *width as u32,
-            *height as u32,
-        );
+        hightlight_image(&mut mark, format!("{}{}", lp, pip.atlas_path()), *x as u32, *y as u32, *width as u32, *height as u32);
     }
+    
+    let texture: RgbaImage = base.sub_image(*x as u32, *y as u32, *width as u32, *height as u32).to_image();
     match texture.save(&out_path) {
         Ok(_) => {}
         Err(error) => println!("Could not save texture: {}", error),
     }
+
     println!("{}", out_path);
 }
