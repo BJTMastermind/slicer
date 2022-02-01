@@ -13,6 +13,18 @@ fn main() {
         std::process::exit(0);
     }
 
+    // Check to make sure output/leftover path is not a zip.
+    if args[1].ends_with(".zip") {
+        println!("Output path can't be a zip file.\n");
+        println!("Usage: <input dir or zip> <output dir> [<leftover dir>]");
+        std::process::exit(0);
+    }
+    if args[2].ends_with(".zip") {
+        println!("Leftover path can't be a zip file.\n");
+        println!("Usage: <input dir or zip> <output dir> [<leftover dir>]");
+        std::process::exit(0);
+    }
+
     // formating folder paths
     for i in 0..3 {
         if let Some(arg) = args.get_mut(i) {
